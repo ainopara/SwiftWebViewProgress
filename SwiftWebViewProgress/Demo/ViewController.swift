@@ -16,7 +16,7 @@ class ViewController: UIViewController, UIWebViewDelegate, WebViewProgressDelega
     // MARK: LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
         webView = UIWebView(frame: self.view.bounds)
         self.view.addSubview(webView)
         
@@ -25,34 +25,26 @@ class ViewController: UIViewController, UIWebViewDelegate, WebViewProgressDelega
         progressProxy.webViewProxyDelegate = self
         progressProxy.progressDelegate = self
         
-        let progressBarHeight: CGFloat = 2.0
-        let navigationBarBounds = self.navigationController!.navigationBar.bounds
-        let barFrame = CGRect(x: 0, y: navigationBarBounds.size.height - progressBarHeight, width: navigationBarBounds.width, height: progressBarHeight)
-        progressView = WebViewProgressView(frame: barFrame)
-        progressView.autoresizingMask = [.FlexibleWidth, .FlexibleTopMargin]
+        progressView = WebViewProgressView(frame: CGRect.zero)
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(progressView)
+
+        self.view.addConstraint(NSLayoutConstraint(item: progressView, attribute: .Leading, relatedBy: .Equal, toItem: self.view, attribute: .Leading, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: progressView, attribute: .Trailing, relatedBy: .Equal, toItem: self.view, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: progressView, attribute: .Top, relatedBy: .Equal, toItem: self.topLayoutGuide, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+        self.progressView.addConstraint(NSLayoutConstraint(item: progressView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: 2.0))
         
         loadApple()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController!.navigationBar.addSubview(progressView)
-    }
-    
     // MARK: Private Method
     private func loadApple() {
-        let request = NSURLRequest(URL: NSURL(string: "http://apple.com")!)
-        webView.loadRequest(request)
+        webView.loadRequest(NSURLRequest(URL: NSURL(string: "https://apple.com")!))
     }
     
     // MARK: - WebViewProgressDelegate
     func webViewProgress(webViewProgress: WebViewProgress, updateProgress progress: Float) {
+        NSLog("progress: \(progress)")
         progressView.setProgress(progress, animated: true)
     }
 }
-
